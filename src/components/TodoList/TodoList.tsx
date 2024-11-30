@@ -9,8 +9,7 @@ interface Props {
   editedInputById: number;
   editedValue: string;
   filteredTodos: Todo[];
-  idsOfTodosOnSelect: number[];
-  idsOfRecedingTodos: number[];
+  idsOfTodosWithLoader: number[];
   editedInputRef: React.MutableRefObject<HTMLInputElement | null>;
   onDelete: (id: number) => void;
   onSelect: (id: number, todo: Todo) => void;
@@ -26,8 +25,7 @@ export const TodoList: React.FC<Props> = React.memo(
     editedInputById,
     editedValue,
     filteredTodos,
-    idsOfTodosOnSelect,
-    idsOfRecedingTodos,
+    idsOfTodosWithLoader,
     editedInputRef,
     onDelete,
     onSelect,
@@ -49,8 +47,7 @@ export const TodoList: React.FC<Props> = React.memo(
             tempTodo={tempTodo}
             editedValue={editedValue}
             editedInputById={editedInputById}
-            idsOfTodosOnSelect={idsOfTodosOnSelect}
-            idsOfRecedingTodos={idsOfRecedingTodos}
+            idsOfTodosWithLoader={idsOfTodosWithLoader}
             editedInputRef={editedInputRef}
             onDelete={onDelete}
             onSelect={onSelect}

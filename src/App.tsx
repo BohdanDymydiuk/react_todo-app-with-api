@@ -24,15 +24,15 @@ export enum Filter {
 export const App: React.FC = () => {
   // #region variables
 
-  const [value, setValue] = useState<string>('');
-  const [editedValue, setEditedValue] = useState<string>('');
+  const [value, setValue] = useState('');
+  const [editedValue, setEditedValue] = useState('');
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [isInputDisabled, setIsInputDisabled] = useState<boolean>(false);
-  const [filter, setFilter] = useState<string>(Filter.all);
-  const [error, setError] = useState<string>('');
-  const [allCompleted, setAllCompleted] = useState<boolean>(false);
-  const [editedInputById, setEditedInputById] = useState<number>(-1);
-  const [key, setKey] = useState<string>('');
+  const [isInputDisabled, setIsInputDisabled] = useState(false);
+  const [filter, setFilter] = useState(Filter.all);
+  const [error, setError] = useState('');
+  const [allCompleted, setAllCompleted] = useState(false);
+  const [editedInputById, setEditedInputById] = useState(-1);
+  const [key, setKey] = useState('');
 
   const filteredTodos = useMemo(() => {
     return todos.filter(todo => {
@@ -55,9 +55,10 @@ export const App: React.FC = () => {
   // #endregion
   // #region variables for loader
 
-  const [idsOfRecedingTodos, setIdsOfRecedingTodos] = useState<number[]>([]);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
-  const [idsOfTodosOnSelect, setIdsOfTodosOnSelect] = useState<number[]>([]);
+  const [idsOfTodosWithLoader, setIdsOfTodosWithLoader] = useState<number[]>(
+    [],
+  );
 
   // #endregion
   // #region useEffects
@@ -78,7 +79,10 @@ export const App: React.FC = () => {
   }, [isInputDisabled]);
 
   useEffect(() => {
-    if (completedTodos.length > 0 && completedTodos.length === todos.length) {
+    const isAllCompleted =
+      completedTodos.length > 0 && completedTodos.length === todos.length;
+
+    if (isAllCompleted) {
       setAllCompleted(true);
     } else if (allCompleted) {
       setAllCompleted(false);
@@ -145,14 +149,14 @@ export const App: React.FC = () => {
       })
       .finally(() => {
         setTimeout(() => {
-          setIdsOfRecedingTodos(ids => ids.slice(1));
+          setIdsOfTodosWithLoader(ids => ids.slice(1));
           inputRef.current?.focus();
         }, 500);
       });
   }
 
   function onDelete(id: number) {
-    setIdsOfRecedingTodos(ids => [...ids, id]);
+    setIdsOfTodosWithLoader(ids => [...ids, id]);
     deleteRequest(id);
   }
 
@@ -161,14 +165,14 @@ export const App: React.FC = () => {
       if (todo.completed) {
         const { id } = todo;
 
-        setIdsOfRecedingTodos(ids => [...ids, id]);
+        setIdsOfTodosWithLoader(ids => [...ids, id]);
         deleteRequest(id);
       }
     });
   }
 
   function onSelect(id: number, todo: Todo) {
-    setIdsOfTodosOnSelect(ids => [...ids, id]);
+    setIdsOfTodosWithLoader(ids => [...ids, id]);
 
     patchTodo(id, todo)
       .then(_todo => {
@@ -183,7 +187,7 @@ export const App: React.FC = () => {
         setError('Unable to update a todo');
         setTimeout(() => setError(''), 3000);
       })
-      .finally(() => setIdsOfTodosOnSelect(ids => ids.slice(1)));
+      .finally(() => setIdsOfTodosWithLoader(ids => ids.slice(1)));
   }
 
   function toogleAll() {
@@ -227,7 +231,7 @@ export const App: React.FC = () => {
     }
 
     if (trimmedValue.length === 0) {
-      setIdsOfRecedingTodos(ids => [...ids, id]);
+      setIdsOfTodosWithLoader(ids => [...ids, id]);
       deleteRequest(id);
 
       setTimeout(() => {
@@ -240,21 +244,6 @@ export const App: React.FC = () => {
     editedTodo.title = trimmedValue;
 
     onSelect(id, editedTodo);
-  }
-
-  // #endregion
-  // #region filter functions
-
-  function allSelected() {
-    setFilter(Filter.all);
-  }
-
-  function activeSelected() {
-    setFilter(Filter.active);
-  }
-
-  function completedSelected() {
-    setFilter(Filter.completed);
   }
 
   // #endregion
@@ -294,8 +283,7 @@ export const App: React.FC = () => {
           editedInputById={editedInputById}
           editedValue={editedValue}
           filteredTodos={filteredTodos}
-          idsOfTodosOnSelect={idsOfTodosOnSelect}
-          idsOfRecedingTodos={idsOfRecedingTodos}
+          idsOfTodosWithLoader={idsOfTodosWithLoader}
           editedInputRef={editedInputRef}
           onDelete={onDelete}
           onSelect={onSelect}
@@ -310,9 +298,7 @@ export const App: React.FC = () => {
             filter={filter}
             nrOfActiveTodos={nrOfActiveTodos}
             todos={todos}
-            allSelected={allSelected}
-            activeSelected={activeSelected}
-            completedSelected={completedSelected}
+            setFilter={setFilter}
             onDeleteSelected={onDeleteSelected}
           />
         )}

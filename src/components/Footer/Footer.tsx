@@ -7,25 +7,19 @@ interface Props {
   filter: string;
   nrOfActiveTodos: number;
   todos: Todo[];
-  allSelected: () => void;
-  activeSelected: () => void;
-  completedSelected: () => void;
+  setFilter: (arg: Filter) => void;
   onDeleteSelected: () => void;
 }
 
 export const Footer: React.FC<Props> = React.memo(
-  ({
-    filter,
-    nrOfActiveTodos,
-    todos,
-    allSelected,
-    activeSelected,
-    completedSelected,
-    onDeleteSelected,
-  }) => {
+  ({ filter, nrOfActiveTodos, todos, setFilter, onDeleteSelected }) => {
     const isCompletedExists = todos.some(todo => todo.completed);
-    const filterFs = [allSelected, activeSelected, completedSelected];
+    const filterFs: (() => void)[] = [];
     const filterValues = Object.values(Filter);
+
+    filterValues.forEach(
+      (value, index) => (filterFs[index] = () => setFilter(value)),
+    );
 
     return (
       <footer className="todoapp__footer" data-cy="Footer">

@@ -8,8 +8,7 @@ interface Props {
   tempTodo: Todo | null;
   editedValue: string;
   editedInputById: number;
-  idsOfTodosOnSelect: number[];
-  idsOfRecedingTodos: number[];
+  idsOfTodosWithLoader: number[];
   editedInputRef: React.MutableRefObject<HTMLInputElement | null>;
   onDelete: (id: number) => void;
   onSelect: (id: number, todo: Todo) => void;
@@ -25,8 +24,7 @@ export const TodoItem: React.FC<Props> = React.memo(
     tempTodo,
     editedValue,
     editedInputById,
-    idsOfTodosOnSelect,
-    idsOfRecedingTodos,
+    idsOfTodosWithLoader,
     editedInputRef,
     onDelete,
     onSelect,
@@ -88,9 +86,7 @@ export const TodoItem: React.FC<Props> = React.memo(
           data-cy="TodoLoader"
           className={classNames('modal', 'overlay', {
             'is-active':
-              tempTodo?.id === id ||
-              idsOfTodosOnSelect.includes(id) ||
-              idsOfRecedingTodos.includes(id),
+              tempTodo?.id === id || idsOfTodosWithLoader.includes(id),
           })}
         >
           <div className="modal-background has-background-white-ter" />
